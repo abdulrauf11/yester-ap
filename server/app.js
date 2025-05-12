@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js'; // Import routes for authentication (signup & login)
+import userRoutes from './routes/userRoutes.js';
 
 export const app = express(); // Create the Express app
 
@@ -16,3 +17,4 @@ app.use(express.urlencoded({ extended: true }));
 // Use the authentication routes under the '/api' path
 // Example: POST request to http://localhost:8000/api/signup will trigger signup logic
 app.use('/api', authRoutes);
+app.use('/api', userRoutes);

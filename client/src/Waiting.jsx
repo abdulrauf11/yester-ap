@@ -3,6 +3,7 @@ import '../../design/css/waiting.css';
 import { io } from 'socket.io-client';
 import { useEffect } from 'react';
 import { useGlobalState } from './GlobalStateContext';
+import Navbar from './Navbar';
 
 // Connect to backend Socket.IO server (make sure it's running on port 8000)
 const socket = io('http://localhost:8000');
@@ -12,7 +13,10 @@ function Waiting() {
   const navigate = useNavigate(); // Used to redirect when a match is found
 
   useEffect(() => {
-    if (!loggedInUser) return; // Don't try to match if user is not logged in
+    if (!loggedInUser) {
+      navigate('/login'); // Redirect if not logged in
+      return;
+    }
 
     // Ask server to find a match for this user
     socket.emit('find_match', {
@@ -33,15 +37,18 @@ function Waiting() {
   }, [loggedInUser, navigate]); // runs again only when user logs in or changes
 
   return (
-    <main className="waiting-container">
-      <h1 className="waiting-title">Waiting for Opponent…</h1>
-      <p className="waiting-subtitle">Matchmaking in progress</p>
-      <Link to="/home">
-        <button id="cancelBtn" className="btn btn-secondary">
-          Cancel
-        </button>
-      </Link>
-    </main>
+    <div>
+      <Navbar />
+      <main className="waiting-container">
+        <h1 className="waiting-title">Waiting for Opponent…</h1>
+        <p className="waiting-subtitle">Matchmaking in progress</p>
+        <Link to="/home">
+          <button id="cancelBtn" className="btn btn-secondary">
+            Cancel
+          </button>
+        </Link>
+      </main>
+    </div>
   );
 }
 

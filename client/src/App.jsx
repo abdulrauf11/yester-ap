@@ -5,14 +5,15 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Import page components
 import Welcome from './Welcome';
-import Login from './login';
-import Signup from './signup';
-import Home from './home';
+import Login from './Login';
+import Home from './Home';
 import Waiting from './Waiting';
 import Game from './Game';
+import Signup from './Signup';
 
 // Import global state provider to share data (like user info) across components
 import { GlobalStateProvider } from './GlobalStateContext';
+import UpdateProfile from './UpdateProfile';
 
 function App() {
   return (
@@ -33,6 +34,9 @@ function App() {
 
             {/* Route for home screen after login */}
             <Route path="/home" element={<Home />} />
+
+            {/* Route for update profile page */}
+            <Route path="/update-profile" element={<UpdateProfile />} />
 
             {/* Waiting room before game starts */}
             <Route path="/newgame/waiting" element={<Waiting />} />
