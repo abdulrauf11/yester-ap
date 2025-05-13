@@ -1,11 +1,11 @@
-export function maxAreaOfIsland(grid: number[][]): number {
+export function maxAreaOfIsland(grid) {
     if (!grid || grid.length === 0) {
       return 0
     }
   
     const rows = grid.length
     const cols = grid[0].length
-    function dfs(row: number, col: number, isLandArea: { value: number }) {
+    function dfs(row, col, isLandArea) {
       if (row < 0 || row >= rows || col < 0 || col >= cols || grid[row][col] === 0) {
         return
       }

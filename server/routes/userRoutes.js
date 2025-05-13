@@ -6,7 +6,7 @@ const router = express.Router();
 // GET user info by ID (for navbar/profile)
 router.get('/user/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id, 'username coins');
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json(user);
   } catch (err) {

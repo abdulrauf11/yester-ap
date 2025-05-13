@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGlobalState } from './GlobalStateContext';
 import axios from 'axios';
+import socket from './socket';
 
 function Navbar() {
   const { loggedInUser, setLoggedInUser } = useGlobalState();
@@ -12,7 +13,10 @@ function Navbar() {
     if (loggedInUser) {
       axios
         .get(`http://localhost:8000/api/user/${loggedInUser.userId}`)
-        .then((res) => setCoins(res.data.coins))
+        .then((res) => {
+          console.log('user nav: ', res.data);
+          setCoins(res.data.coins);
+        })
         .catch((err) => console.error(err));
     }
   }, [loggedInUser]);
@@ -20,6 +24,7 @@ function Navbar() {
   if (!loggedInUser) return null;
 
   const handleLogout = () => {
+    socket.disconnect(); // ⛔️ triggers disconnect → server treats as forfeit
     setLoggedInUser(null);
     navigate('/');
   };

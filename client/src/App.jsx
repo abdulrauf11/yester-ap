@@ -3,6 +3,9 @@ import './App.css';
 // Import routing components from React Router
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// Import global state provider to share data (like user info) across components
+import { GlobalStateProvider } from './GlobalStateContext';
+
 // Import page components
 import Welcome from './Welcome';
 import Login from './Login';
@@ -10,9 +13,6 @@ import Home from './Home';
 import Waiting from './Waiting';
 import Game from './Game';
 import Signup from './Signup';
-
-// Import global state provider to share data (like user info) across components
-import { GlobalStateProvider } from './GlobalStateContext';
 import UpdateProfile from './UpdateProfile';
 
 function App() {

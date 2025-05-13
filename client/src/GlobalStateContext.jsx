@@ -6,7 +6,7 @@ const GlobalStateContext = createContext();
 // This component wraps your entire app and provides shared state
 export const GlobalStateProvider = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState(null); // stores user info: { userId, username }
-  // const [gameState, setGameState] = useState(null); // stores game session info after matchmaking
+  const [gameState, setGameState] = useState(null); // stores game session info after matchmaking
 
   // Add any other global states here and include in the value below
   return (
@@ -14,8 +14,8 @@ export const GlobalStateProvider = ({ children }) => {
       value={{
         loggedInUser,
         setLoggedInUser,
-        // gameState,
-        // setGameState,
+        gameState,
+        setGameState,
       }}
     >
       {children}

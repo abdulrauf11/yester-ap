@@ -1,24 +1,31 @@
 import { Link, useNavigate } from 'react-router-dom';
 import '../../design/css/waiting.css';
-import { io } from 'socket.io-client';
 import { useEffect } from 'react';
 import { useGlobalState } from './GlobalStateContext';
 import Navbar from './Navbar';
-
-// Connect to backend Socket.IO server (make sure it's running on port 8000)
-const socket = io('http://localhost:8000');
+import socket from './socket';
 
 function Waiting() {
-  const { loggedInUser } = useGlobalState(); // Access user
+  const { loggedInUser, setGameState } = useGlobalState(); // Access user
   const navigate = useNavigate(); // Used to redirect when a match is found
 
   useEffect(() => {
     if (!loggedInUser) {
-      navigate('/login'); // Redirect if not logged in
+      navigate('/login'); // Redirect to login page if user is not logged in
       return;
     }
 
+    // ✅ Reconnect socket if it was disconnected
+    if (!socket.connected) {
+      socket.connect();
+    }
+
     // Ask server to find a match for this user
+    console.log(
+      '📤 Emitting find_match for:',
+      loggedInUser.username,
+      loggedInUser.userId
+    );
     socket.emit('find_match', {
       userId: loggedInUser.userId,
       username: loggedInUser.username,
@@ -26,15 +33,17 @@ function Waiting() {
 
     // Listen for a match to be made and game to start
     socket.on('start_game', (data) => {
-      console.log('START'); // Debug: confirm the event was received
-      navigate(`/newgame/${data.gameId}`); // Redirect to the game screen
+      console.log('🎯 Received start_game in Waiting:', data); // Confirm event received
+      setGameState(data); // ✅ save game info globally
+      // Redirect to the game screen once matched
+      navigate(`/newgame/${data.gameId}`);
     });
 
     // Cleanup when component unmounts or user changes
     return () => {
-      socket.off('start_game'); // remove the listener
+      socket.off('start_game'); // Remove the listener to prevent multiple bindings
     };
-  }, [loggedInUser, navigate]); // runs again only when user logs in or changes
+  }, [loggedInUser, navigate, setGameState]); // runs again only when user logs in or changes
 
   return (
     <div>
