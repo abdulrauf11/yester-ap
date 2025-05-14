@@ -1,6 +1,6 @@
 import User from '../models/User.js';
 
-export async function updateCoins(userId, amount) {
+export const updateCoins = async (userId, amount) => {
   try {
     const user = await User.findById(userId);
     if (!user) return;
@@ -11,4 +11,4 @@ export async function updateCoins(userId, amount) {
   } catch (err) {
     console.error('❌ Error updating coins:', err);
   }
-}
+};

@@ -14,7 +14,6 @@ function Navbar() {
       axios
         .get(`http://localhost:8000/api/user/${loggedInUser.userId}`)
         .then((res) => {
-          console.log('user nav: ', res.data);
           setCoins(res.data.coins);
         })
         .catch((err) => console.error(err));
@@ -24,7 +23,7 @@ function Navbar() {
   if (!loggedInUser) return null;
 
   const handleLogout = () => {
-    socket.disconnect(); // ⛔️ triggers disconnect → server treats as forfeit
+    socket.disconnect(); // triggers disconnect → server treats as forfeit
     setLoggedInUser(null);
     navigate('/');
   };

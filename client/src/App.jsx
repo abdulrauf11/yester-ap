@@ -11,9 +11,11 @@ import Welcome from './Welcome';
 import Login from './Login';
 import Home from './Home';
 import Waiting from './Waiting';
-import Game from './Game';
+import Gameplay from './Gameplay';
 import Signup from './Signup';
 import UpdateProfile from './UpdateProfile';
+import History from './History';
+import HistoryDetail from './HistoryDetail';
 
 function App() {
   return (
@@ -42,7 +44,13 @@ function App() {
             <Route path="/newgame/waiting" element={<Waiting />} />
 
             {/* Game page (dynamic route based on game ID) */}
-            <Route path="/newgame/:gameId" element={<Game />} />
+            <Route path="/newgame/:gameId" element={<Gameplay />} />
+
+            {/* History page */}
+            <Route path="/history" element={<History />} />
+
+            {/* History detail page (dynamic route based on game ID) */}
+            <Route path="/history/:gameId" element={<HistoryDetail />} />
           </Routes>
         </BrowserRouter>
       </GlobalStateProvider>

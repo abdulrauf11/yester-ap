@@ -4,6 +4,7 @@ import { app } from './app.js';
 import mongoose from 'mongoose';
 import { maxAreaOfIsland } from './utils/maxAreaOfIsland.js';
 import { updateCoins } from './utils/updateCoins.js';
+import { saveGame } from './utils/saveGame.js';
 
 // Create HTTP server from Express app
 const server = http.createServer(app);
@@ -31,14 +32,12 @@ io.on('connection', (socket) => {
   socket.on('find_match', ({ userId, username }) => {
     console.log(`🔍 ${username} is looking for a match`);
 
-    console.log(waitingQueue);
-
     // Prevent duplicate entries in the queue
     const alreadyInQueue = waitingQueue.some(
       (player) => player.userId === userId
     );
     if (alreadyInQueue) {
-      console.log(`⚠️ ${username} is already in the queue`);
+      console.log(`⚠️  ${username} is already in the queue`);
       return;
     }
     const isAlreadyInGame = Object.values(activeGames).some((game) =>
@@ -61,6 +60,7 @@ io.on('connection', (socket) => {
 
       // Create a new game entry
       activeGames[gameId] = {
+        id: gameId,
         grid: Array(25).fill(null), // 5x5 grid
         turn: player1.socket.id, // who starts first
         movesMade: 0,
@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
   });
 
   // When client sends 'make_move' event
-  socket.on('make_move', ({ gameId, index, color }) => {
+  socket.on('make_move', async ({ gameId, index, color }) => {
     const game = activeGames[gameId];
     if (!game || game.grid[index]) return;
 
@@ -166,12 +166,20 @@ io.on('connection', (socket) => {
         updateCoins(game.players[loser].userId, -200);
       }
 
+      // Save game to DB
+      saveGame(
+        game,
+        game.players[winner],
+        game.players[loser],
+        result === 'win' ? game.players[winner].userId : null
+      );
+
       delete activeGames[gameId];
     }
   });
 
   // When client sends 'forfeit_game' event
-  socket.on('forfeit_game', ({ gameId }) => {
+  socket.on('forfeit_game', async ({ gameId }) => {
     const game = activeGames[gameId];
     if (!game) return;
 
@@ -186,12 +194,20 @@ io.on('connection', (socket) => {
     updateCoins(game.players[opponentId].userId, +200);
     updateCoins(game.players[socket.id].userId, -200);
 
+    // Save to DB
+    saveGame(
+      game,
+      game.players[opponentId],
+      game.players[socket.id],
+      game.players[opponentId].userId
+    );
+
     // Clean up
     delete activeGames[gameId];
   });
 
   // Handle disconnect
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     console.log('❌ User disconnected:', socket.id);
 
     // Remove from activeGames if user was in a game
@@ -209,6 +225,14 @@ io.on('connection', (socket) => {
         });
         updateCoins(game.players[opponentId].userId, +200);
         updateCoins(game.players[socket.id].userId, -200);
+
+        // Save to DB
+        saveGame(
+          game,
+          game.players[opponentId],
+          game.players[socket.id],
+          game.players[opponentId].userId
+        );
 
         delete activeGames[gameId];
         break;
